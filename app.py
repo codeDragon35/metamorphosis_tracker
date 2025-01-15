@@ -1,9 +1,11 @@
-from flask import Flask, jsonify, request, render_template, redirect, url_for, flash, session
+from flask import Flask, json, jsonify, request, render_template, redirect, url_for, flash, session
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db, init_db
 from sqlalchemy.exc import IntegrityError
 from models import User, Goal, Timeline, Task
+
 
 
 
@@ -17,7 +19,7 @@ init_db(app)
 
 @app.route('/')
 def home():
-    return render_template('index.html');
+    return render_template('index.html')
 
 # User routes
 @app.route('/register', methods=['GET', 'POST'])
@@ -89,14 +91,67 @@ def tasks(id):
         task_name = request.form['tasks']
         tasks_list = task_name.split(',')
         for task in tasks_list:
-            new_task = Task(goal_id=id, task_name=task.strip(), total_timeline=total_timeline, description=description)
+            new_task = Task(goal_id=id, name=task.strip(), total_timeline=total_timeline, description=description)
             db.session.add(new_task)
         db.session.commit()
     
-    flash('Tasks added successfully!', 'success')
+        flash('Tasks added successfully!', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template('tasks.html', goal_name=goal.title, id=id, user_id=goal.user_id, timeline=goal.timeline)
+
+
+@app.route('/goal/<int:id>/update', methods=['POST'])
+def update_task(id):
+    if 'user_id' not in session:
+        flash('Please log in first.', 'error')
+        return redirect(url_for('login'))
+    
+
+    tasks_status = request.form.get('taskData')
+    if tasks_status:
+        tasks_status = json.loads(tasks_status)
+        if tasks_status.items().__len__() > 0:
+            for task_id, task_done in tasks_status.items():
+                task = Task.query.get(task_id)
+                goal_id = task.goal_id
+                goal = Goal.query.get(goal_id)
+                if goal.user_id == session['user_id']:
+                    if task_done:
+                        task.days_followed += 1
+                        if goal.timeline == task.days_followed:
+                            goal.status = 'Completed'
+                            goal.completed_at = datetime.utcnow()
+                        else:
+                            goal.status = 'In Progress'
+                    else:
+                        goal.completed_at = None
+                        goal.status = 'In Progress'
+                    db.session.commit()
+            flash('Tasks updated successfully!', 'success')
+        else:
+            flash('No changes made to the tasks.', 'info')
+    else:
+        flash('No changes made to the tasks.', 'info')
+
     return redirect(url_for('dashboard'))
+    # if 'user_id' not in session:
+    #     flash('Please log in first.', 'error')
+    #     return redirect(url_for('login'))
 
+    # task = Task.query.get_or_404(id)
+    # if task.goal.user_id != session['user_id']:
+    #     flash('You do not have permission to update this task.', 'error')
+    #     return redirect(url_for('login'))
 
+    # if request.form.get('task_'+str(id)):
+    #     task.days_followed += 1
+    #     db.session.commit()
+    #     flash('Task updated successfully!', 'success')
+    # else:
+    #     flash('No changes made to the task.', 'info')
+
+    # return redirect(url_for('dashboard'))
 
 # Goals routes
 @app.route('/dashboard')
@@ -138,27 +193,44 @@ def view_goal(id):
     
     goal = Goal.query.get_or_404(id)
     timeline = Timeline.query.filter_by(goal_id=goal.id).all()
-    return render_template('goal_details.html', goal=goal, timeline=timeline)
+    tasks = Task.query.filter_by(goal_id=goal.id).all()
+    return render_template('goal_details.html', goal=goal, tasks =tasks, timeline=timeline)
 
 
-@app.route('/goals/<int:goal_id>/add_stage', methods=['GET', 'POST'])
-def add_stage(goal_id):
+@app.route('/goals/<int:id>/delete', methods=['POST'])
+def delete_goal(id):
     if 'user_id' not in session:
         flash('Please log in first.', 'error')
         return redirect(url_for('login'))
 
+    goal = Goal.query.get_or_404(id)
+    if goal.user_id != session['user_id']:
+        flash('You do not have permission to delete this goal.', 'error')
+        return redirect(url_for('login'))
+
+    db.session.delete(goal)
+    db.session.commit()
+    flash('Goal deleted successfully!', 'success')
+    return redirect(url_for('dashboard'))
+
+# @app.route('/goals/<int:goal_id>/add_stage', methods=['GET', 'POST'])
+# def add_stage(goal_id):
+#     if 'user_id' not in session:
+#         flash('Please log in first.', 'error')
+#         return redirect(url_for('login'))
+
     
-    if request.method == 'POST':
-        stage_name = request.form['stage_name']
-        description = request.form['description']
-        new_stage = Timeline(goal_id=goal_id, stage_name= stage_name, description=description)
-        db.session.add(new_stage)
-        db.session.commit()
+#     if request.method == 'POST':
+#         stage_name = request.form['stage_name']
+#         description = request.form['description']
+#         new_stage = Timeline(goal_id=goal_id, stage_name= stage_name, description=description)
+#         db.session.add(new_stage)
+#         db.session.commit()
         
-        flash('Stage added successfully!', 'success')
-        return redirect(url_for('view_goal', id=goal_id))
+#         flash('Stage added successfully!', 'success')
+#         return redirect(url_for('view_goal', id=goal_id))
     
-    return render_template('goal_details.html', goal_id=goal_id)
+#     return render_template('goal_details.html', goal_id=goal_id)
 
 
 @app.route('/start-journey', methods=['GET'])

@@ -164,6 +164,7 @@
                             <th scope="col">Category</th>
                             <th scope="col">Progress</th>
                             <th scope="col">Action</th>
+                            <th scope="col">Badge</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -172,15 +173,28 @@
                                 <td>{{ goal.title }}</td>
                                 <td>{{ goal.description }}</td>
                                 <td>{{ goal.category }}</td>
-                                <td>{{ goal.progress }}%</td>
+                                <td>{{ goal.status }}</td>
                                 <td>
-                                    <button class="btn btn-primary">
+                                    <a href="/goals/{{ goal.id }}" class="btn btn-primary">
                                         <i class="fas fa-pencil-alt"></i> Log Progress
-                                    </button>
-                                    <button class="btn btn-danger">
-                                        <i class="fas fa-trash-alt"></i> Delete Goal
-                                    </button>
+                                    </a>
+                                    <form action="/goals/{{ goal.id }}/delete" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash-alt"></i> Delete Goal
+                                        </button>
+                                    </form>
                                 </td>
+                                {% if goal.status == 'Completed' %}
+                                    {% if goal.category == 'monarch'%}
+                                        <td><img src="../static/images/monarch.png" alt="Monarch" style="width: 50px;"></td>
+                                    {% elif goal.category == 'the-blue-Morpho-Butterfly' %}
+                                        <td><img src="../static/images/the-blue-Morpho-Butterfly.png" alt="The Blue Morpho Butterfly" style="width: 50px;"></td>
+                                    {% else %}
+                                        <td><img src="../static/images/swallowtail.png" alt="Swallowtail" style="width: 50px;"></td>
+                                    {% endif %}
+                                {% else %}
+                                    <td>Keep up the work to earn the badge</td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -36,7 +36,7 @@ class Task(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
+    description = db.Column(db.Text, nullable=True, default='No description')
     total_timeline = db.Column(db.Integer, nullable=False)
     days_followed = db.Column(db.Integer, default=0)
     goal_id = db.Column(db.Integer, db.ForeignKey('goals.id'), nullable=False)
