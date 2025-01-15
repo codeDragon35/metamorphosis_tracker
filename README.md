@@ -93,8 +93,13 @@ db = SQLAlchemy(app)
 ```
 
 ## Acknowledgements
-GitHub Copilot (GPT 4o)
-ChatGPT
-Flask
-SQLAlchemy
-Bootstrap
+- GitHub Copilot (GPT 4o)
+- ChatGPT
+- Dev.to (GitHub Copilot 1-Day Build Challenge)
+- Flask
+- SQLAlchemy
+- Bootstrap
+
+## Future Scope
+- Features like notification reminders
+- add more animations to more visually interpret the goal journey
