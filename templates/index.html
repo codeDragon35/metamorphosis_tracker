@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffe5d9;
+            font-family: 'Roboto', sans-serif;
+        }
+        .navbar {
+            background-color: #ffcad4;
+        }
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+        }
+        .jumbotron {
+            background-color: #ffe5d9;
+            color: #6d6875;
+        }
+        .jumbotron h1 {
+            font-family: 'Playfair Display', serif;
+        }
+        .btn-custom {
+            background-color: #ffcad4;
+            color: #6d6875;
+            font-size: 0.9rem;
+        }
+        .btn-custom:hover {
+            color: #6d6875;
+            box-shadow: 0 0 20px white;
+            transform: scale(1.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#" style="font-weight: bold; color: #6d6875;">Metamorphosis Tracker</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                {% if session['user_id'] %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard" style="color: #6d6875; font-weight: bold;">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout" style="color: #6d6875; font-weight: bold;">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register" style="color: #6d6875; font-weight: bold;">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login" style="color: #6d6875; font-weight: bold;">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Welcome to Metamorphosis Tracker</h1>
+        <p class="lead">Track your transformation journey with ease and elegance.</p>
+        <blockquote class="blockquote"></blockquote>
+            <p class="mb-0" style="font-family: 'Playfair Display', serif; font-style: italic;">"Just when the caterpillar thought the world was over, it became a butterfly."</p>
+            <footer class="blockquote-footer" style="font-family: 'Roboto', sans-serif;">Anonymous</footer>
+        </blockquote>  
+        <div style="margin-top: 20px;">
+            <a class="btn btn-custom btn-lg btn-hover" href="/register" role="button">Get Started</a>
+        </div>      
+        <div class="caterpillar-animation">
+            <img src="../static/images/butterfly-metamorphosis-from-caterpillar-to-cocoon-to-butterfly.png" alt="Butterfly Metamorphosis"  style="height:350px"class="img-fluid">
+        </div>
+        <footer class="text-center" style="margin-top: 40px;">
+            <p>&copy; 2025 metamorphosis-tracker.com. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
